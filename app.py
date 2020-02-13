@@ -3,6 +3,7 @@ from flask import Flask, request, url_for, render_template, redirect, flash
 
 # Project imports
 from search_form import search_form
+from db_operations import get_db_version
 
 # Flask config info
 app = Flask(__name__)

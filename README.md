@@ -1,5 +1,5 @@
 # SearchEngine
-Search engine using Python 3, Flask, Psycopg and Beautiful Soup
+Search engine using Python 3, Flask, Psycopg and Beautiful Soup, along with PostgreSQL databse.
 
 ## Installs
 *update for Windows CMD*
@@ -9,6 +9,8 @@ For Beautiful Soup, run `pip3 install -U beautifulsoup4`
 For Flask, run `pip3 install -U Flask`
 
 For Psycopg, run `pip3 install -U psycopg2`
+
+For PostgreSQL, run `brew install postgresql`
 
 ## Setup the Database
 
