@@ -1,31 +1,31 @@
-# import bs4 as bs
 from bs4 import BeautifulSoup
-import urllib
-import codecs
 import json
 
-f = open("corpustest.html")
-content = f.read()
-soup = BeautifulSoup(content, 'html.parser')
+def preprocess_courses_corpus():
+    soup = None
+    with open('courses_corpus.html', 'r') as infile:
+        content = infile.read()
 
-# print(soup.prettify())
+    soup = BeautifulSoup(content, 'html.parser')
 
-docid = 0
-data = {}
+    docid = 0
+    data = {}
+    data['documents'] = []
 
+    main_table = soup.find_all("div", attrs={'class': 'courseblock'})
+    for course in main_table:
+        docid += 1
+        title = course.find_all('p', attrs={'class':'courseblocktitle noindent'})[0].text.lstrip('\n') if len(course.find_all('p', attrs={'class':'courseblocktitle noindent'}))!=0 else ''
+        description = (course.find_all('p', attrs={'class':'courseblockdesc noindent'})[0].text.lstrip('\n') if len(course.find_all('p', attrs={'class':'courseblockdesc noindent'}))!=0 else '') + ' ' + (course.find_all('p', attrs={'class':'courseblockextra noindent'})[0].text if len(course.find_all('p', attrs={'class':'courseblockextra noindent'}))!=0 else '')
 
-main_table = soup.find_all("div", attrs={'class': 'courseblock'})
-for course in main_table:
-    docid += 1
-    test = course.text
-    data[str(docid)] = []
-    data[str(docid)].append(course.text)
-    print("------")
-    print(course.text)
+        data['documents'].append({
+            'docId' : docid,
+            'title' : title.strip(),
+            'description' : description.strip()
+        })
 
-docnum = docid
+    with open('courses_data.json', 'w') as outfile:
+        json.dump(data, outfile)
 
-print(docnum)
-
-with open('data.json', 'w') as outfile:
-    json.dump(data, outfile)
+if __name__ == "__main__":
+    preprocess_courses_corpus()
