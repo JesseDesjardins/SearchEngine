@@ -5,7 +5,7 @@ from nltk.stem import PorterStemmer, WordNetLemmatizer
 from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.tag import pos_tag
 
-symbols = [':', ';', '(', ')', '!', '?', '...', ',', '.', '-', '\'', '\"']
+symbols = [':', ';', '(', ')', '!', '?', '...', ',', '.', '-', '\'', '\"', '\\', '/']
 """ List of symbols """             
 
 def tokenize(text):

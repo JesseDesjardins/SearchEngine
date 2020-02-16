@@ -12,7 +12,7 @@ For Psycopg, run `pip3 install -U psycopg2`
 
 For NLTK, rum `pip3 install -U nltk`
 
-Requires a few downloads from NLTK, will try to add locally
+Requires a few downloads from NLTK, but the built-in downloads python functionality is currently bugged. Instead, run `nltk_downloader.py` and form the download menu that appears, select the following: From the `Corpora` tab, double-click on the `stopwords` and `wordnet` identifiers, and from the `models` tab, double-click on the `average_perceptron_tagger` and `punkt` identifiers. These should now be available to the nltk python libray.
 
 For PostgreSQL, run `brew install postgresql`
 

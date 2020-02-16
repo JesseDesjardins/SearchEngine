@@ -28,41 +28,43 @@ def build_dict_with_json_file(filename, useStemmer=False, useLemmatization=False
 
     with open(filename) as json_file:
         documents = json.load(json_file)
-        print('Building dictionary...')
-        for doc in documents['documents']:
-            docId = doc['docId']
+        
+    print('Building dictionary...')
+    for doc in documents['documents']:
+        docId = doc['docId']
 
-            # Add title tokens
-            title_tokens = tokenize(doc['title'])
-            title_tokens = case_fold(title_tokens)
-            title_tokens = remove_stopwords(title_tokens)
-            title_tokens = normalize(title_tokens)
-            if useStemmer:
-                title_tokens = stem(title_tokens)
-            if useLemmatization:
-                title_tokens = lemmatize(title_tokens)
+        # Add title tokens
+        title_tokens = tokenize(doc['title'])
+        title_tokens = case_fold(title_tokens)
+        title_tokens = remove_stopwords(title_tokens)
+        title_tokens = normalize(title_tokens)
+        if useStemmer:
+            title_tokens = stem(title_tokens)
+        if useLemmatization:
+            title_tokens = lemmatize(title_tokens)
 
-            for token in title_tokens:
-                dictionary['words'].append({
-                    'word' : token,
-                    'docid' : docId
-                })
+        for token in title_tokens:
+            dictionary['words'].append({
+                'word' : token,
+                'docid' : docId
+            })
+        
+        # Add description tokens
+        description_tokens = tokenize(doc['description'])
+        description_tokens = case_fold(description_tokens)
+        description_tokens = remove_stopwords(description_tokens)
+        description_tokens = normalize(description_tokens)
+        if useStemmer:
+            description_tokens = stem(description_tokens)
+        if useLemmatization:
+            description_tokens = lemmatize(description_tokens)
+
+        for token in description_tokens:
+            dictionary['words'].append({
+                'word' : token,
+                'docid' : docId
+            })
             
-            # Add description tokens
-            description_tokens = tokenize(doc['description'])
-            description_tokens = case_fold(description_tokens)
-            description_tokens = remove_stopwords(description_tokens)
-            description_tokens = normalize(description_tokens)
-            if useStemmer:
-                description_tokens = stem(description_tokens)
-            if useLemmatization:
-                description_tokens = lemmatize(description_tokens)
-
-            for token in description_tokens:
-                dictionary['words'].append({
-                    'word' : token,
-                    'docid' : docId
-                })
     with open('courses_dictionary.json', 'w') as outfile:
         json.dump(dictionary, outfile)
     print('Dictionary built!')

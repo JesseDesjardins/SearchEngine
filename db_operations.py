@@ -70,6 +70,29 @@ def insert_courses_dictionary_into_db(json_file):
     except(Exception) as error:
         print(error)
 
+# def insert_courses_inverted_index_into_db(json_file):
+    # TODO use a table to store terms/doc-frequency values and another table to store docId/term frequency values
+
+def retrieve_courses_documents(doc_ids):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    select_command = 'SELECT docid, title, description FROM corpus_u_of_o_courses.documents WHERE docid IN ('
+    for id in doc_ids:
+        select_command = select_command + '{},'.format(id)
+    select_command = select_command[:-1] + ');'
+    print(select_command)
+
+    try:
+        cursor.execute(select_command)
+        docs = cursor.fetchall()
+    except(Exception) as error:
+        docs = None
+        print(error)
+    
+    return docs
+
+
 if __name__ == "__main__":
     get_db_version()
-    insert_courses_dictionary_into_db('courses_dictionary.json')
+    print(retrieve_courses_documents([1, 2]))
