@@ -27,17 +27,6 @@ def get_db_version():
         # close the communication with the PostgreSQL
         cur.close()
 
-def make_new_table(sql_command):
-    connection = get_connection()
-    cursor = connection.cursor()
-
-    try:
-        cursor.execute(sql_command)
-        cursor.close()
-        connection.commit()
-    except(Exception, psycopg2.ProgrammingError) as error:
-        print(error)
-
 def insert_courses_corpus_into_db(json_file):
     connection = get_connection()
     cursor = connection.cursor()
@@ -61,6 +50,26 @@ def insert_courses_corpus_into_db(json_file):
     except(Exception) as error:
         print(error)
 
+def insert_courses_dictionary_into_db(json_file):
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    insert_command = 'INSERT INTO corpus_u_of_o_courses.dictionary(word, docid) values '
+    with open(json_file) as file:
+        data = json.load(file)
+        for doc in data['words']:
+            insert_command = insert_command + """('{0}', {1}),""".format(doc['word'], doc['docid'])
+        insert_command = insert_command[:-1] + ';' # Removes trailing comma
+    
+    try:
+        print('Inserting courses dictionary into db...')
+        cursor.execute(insert_command)
+        cursor.close()
+        connection.commit()
+        print('Success!')
+    except(Exception) as error:
+        print(error)
+
 if __name__ == "__main__":
     get_db_version()
-    insert_courses_corpus_into_db('courses_data.json')
+    insert_courses_dictionary_into_db('courses_dictionary.json')
