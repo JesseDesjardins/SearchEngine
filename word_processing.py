@@ -54,3 +54,4 @@ def _tag_to_wordnet(tag):
         return wordnet.ADV
     else:          
         return None
+        

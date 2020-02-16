@@ -2,7 +2,7 @@
 import json
 
 # Import local files
-from word_processing_modules import case_fold, normalize, tokenize, remove_stopwords, stem, lemmatize
+from word_processing import case_fold, normalize, tokenize, remove_stopwords, stem, lemmatize
 
 
 def build_dict_with_json_file(filename, useStemmer=False, useLemmatization=False):
