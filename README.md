@@ -1,5 +1,5 @@
 # SearchEngine
-Search engine using Python 3, Flask, Requests, Psycopg, NLTK and Beautiful Soup, along with PostgreSQL databse.
+Search engine using Python 3, Flask, FlaskWTF, WTForms, Requests, Psycopg, NLTK and Beautiful Soup, along with PostgreSQL databse.
 
 ## Installs
 *update for Windows CMD*
@@ -7,6 +7,10 @@ Search engine using Python 3, Flask, Requests, Psycopg, NLTK and Beautiful Soup,
 For Beautiful Soup, run `pip3 install -U beautifulsoup4`
 
 For Flask, run `pip3 install -U Flask`
+
+For FlaskWTF, run `pip3 install -U flask_wtf`
+
+For WTForms, run `pip3 install -U wtforms`
 
 For Requests, run `pip3 install -U requests`
 

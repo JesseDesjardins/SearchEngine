@@ -1,9 +1,8 @@
-from wtforms import Form, StringField, validators
+from flask_wtf import FlaskForm
+from wtforms import StringField, RadioField, SubmitField
+from wtforms.validators import DataRequired
 
-class search_form(Form):
-    """Form for client searching
-    
-    Will add advanced search options later
-    """
-    query_field = StringField("Enter your search...", [validators.InputRequired()])
-    #TODO add advanced search options
+class SearchForm(FlaskForm):
+    query = StringField('Search Query', validators=[DataRequired()])
+    ir_model = RadioField('Model type', choices=[('bool', 'Boolean Model'),('vsm', 'Vector Space Model')], default='bool')
+    submit = SubmitField('Zearjch!')

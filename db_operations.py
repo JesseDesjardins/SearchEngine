@@ -112,15 +112,24 @@ def insert_courses_inverted_index_into_db(json_file):
         print(error)
 
 def retrieve_courses_documents(doc_ids):
-    """ Retrieves the course documents associated with the given list of IDs """
+    """ Retrieves the course documents associated with the given list of IDs 
+    
+    Return
+    ------
+    list of tuple
+        A list of tuples of docid, title and description
+    """
+
     connection = get_connection()
     cursor = connection.cursor()
 
     select_command = 'SELECT docid, title, description FROM corpus_u_of_o_courses.documents WHERE docid IN ('
     for id in doc_ids:
         select_command = select_command + '{},'.format(id)
-    select_command = select_command[:-1] + ');'
-    print(select_command)
+    if select_command[-1] == ',':
+        select_command = select_command[:-1] + ');'
+    else:
+        select_command = select_command + ');'
 
     try:
         cursor.execute(select_command)

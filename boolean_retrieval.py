@@ -7,7 +7,7 @@ from db_operations import retrieve_courses_doc_ids_not_from_set, retrieve_course
 # execute_boolean_query inspired by https://runestone.academy/runestone/books/published/pythonds/BasicDS/InfixPrefixandPostfixExpressions.html
 # TODO move a lot of the set theory directly to sql commands, most likely more efficient on a large data set
 def execute_boolean_query(postfix_query_tokens):
-    """ Get doc_id's of all documents that are accpeted by the query """
+    """ Get list doc_id's of all documents that are accpeted by the query """
     operators = ['AND', 'AND_NOT', 'OR', 'OR_NOT', 'NOT']
     operand_sets = deque()
     for token in postfix_query_tokens:
@@ -30,7 +30,6 @@ def execute_boolean_query(postfix_query_tokens):
             else: # unrechable case
                 None
     return operand_sets.pop()
-
 
 
 def union(lst1, lst2):

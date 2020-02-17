@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <div>
+            {{ form.query.label }}<br>
+            {{ form.query(size=100) }}
+        </div>
+        <div>
+            {{ form.ir_model }}
+        </div>
+        <p>{{ form.submit() }}</p>
+    </form>
+{% endblock %}

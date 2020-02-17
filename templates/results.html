@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+            <div>{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <div><a href="/home">Back to search</a></div>
+    <br>
+    <div>Results:</div>
+    <hr>
+    {% if docs == [] %}
+        <div>**No Results found**</div>
+    {% endif %}
+    {% for doc in docs %}
+        <div>{{ doc[1] }}</div>
+        <br>
+        <div>{{ doc[2] }}</div>
+        <hr>
+    {% endfor %}
+{% endblock %}

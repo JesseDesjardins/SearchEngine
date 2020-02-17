@@ -1,38 +1,48 @@
 # Library imports
 from flask import Flask, request, url_for, render_template, redirect, flash
+import requests
+import json
 
 # Project imports
-from search_form import search_form
-from db_operations import get_db_version
+from search_form import SearchForm
+from db_operations import get_db_version, retrieve_courses_documents
+from boolean_retrieval import execute_boolean_query
+from query_processing import process_query
 
 # Flask config info
 app = Flask(__name__)
 app.config['TESTING'] = True
 app.config['SECRET_KEY'] = "+_I&Mh+If`KPP23+P{1U"
 
-@app.route("/")
-def route_empty_link_to_home():
-    return redirect(url_for("search"))
+# Flask functionality inspired by https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-iii-web-forms
+@app.route("/", methods=['GET', 'POST'])
+@app.route("/home", methods=['GET', 'POST'])
+def home():
+    form = SearchForm()
+    model_type = ''
+    if form.validate_on_submit():
+        query = json.dumps({"query":form.query.data})
+        print(query)
+        if form.ir_model.data == 'bool':
+            model_type = "Boolean Model"
+        elif form.ir_model.data == 'vsm':
+            model_type = "Vector Space Model"
+        else:
+            model_type = ''
+            
+        flash('{0} search on query: {1}'.format(model_type, form.query.data))
+        return redirect(url_for('results', query=query))
+    return render_template("home.html", title='Zearjch', form=form)
 
-@app.route("/search", methods=["GET", "POST"])
-def search():
-    form = search_form(request.form)
-    if request.method == 'POST' and form.validate():
-        # Do things with the form data
-        print(form.query_field)
-        flash("Thanks for the query")
-        return redirect(url_for("hello"))
-    return render_template("search.html", form=form)
-
-@app.route("/hello")
-@app.route("/hello/<name>")
-def hello(name=None):
-    return render_template("hello.html", name=name)
-
-@app.route('/login')
-def login():
-    return 'login'
-
-@app.route('/user/<username>')
-def profile(username):
-    return '{}\'s profile'.format(username)
+@app.route("/results", methods=['GET', 'POST'])
+def results():
+    query_json = request.args['query']
+    query = json.loads(query_json)
+    doc_ids = execute_boolean_query(process_query(query['query']))
+    if doc_ids == []:
+        docs = []
+    else:
+        docs = retrieve_courses_documents(doc_ids)
+    if docs == None:
+        docs = []
+    return render_template('results.html', title='Zearjch', docs=docs)
