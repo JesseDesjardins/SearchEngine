@@ -21,8 +21,7 @@ def home():
     form = SearchForm()
     model_type = ''
     if form.validate_on_submit():
-        query = json.dumps({"query":form.query.data})
-        print(query)
+        query = json.dumps({"ir_model":form.ir_model.data, "query":form.query.data})
         if form.ir_model.data == 'bool':
             model_type = "Boolean Model"
         elif form.ir_model.data == 'vsm':
@@ -38,11 +37,16 @@ def home():
 def results():
     query_json = request.args['query']
     query = json.loads(query_json)
-    doc_ids = execute_boolean_query(process_query(query['query']))
+    if query['ir_model'] == 'bool':
+        doc_ids = execute_boolean_query(process_query(query['query']))
+    elif query['ir_model'] == 'vsm':
+        doc_ids = [] # TODO implement VSM
     if doc_ids == []:
         docs = []
+        doc_count = 0
     else:
         docs = retrieve_courses_documents(doc_ids)
+        doc_count = len(doc_ids)
     if docs == None:
         docs = []
-    return render_template('results.html', title='Zearjch', docs=docs)
+    return render_template('results.html', title='Zearjch', docs=docs, doc_count=doc_count)

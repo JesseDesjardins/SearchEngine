@@ -179,6 +179,32 @@ def retrieve_courses_doc_ids_from_term(term):
     
     return [doc_id[0] for doc_id in doc_ids] # doc_ids is list of tuples of 1 int; simplyfy to a list of ints
 
+def retrieve_courses_doc_ids_from_terms(terms):
+    """ Returns all doc_ids for docs where any terms in the list are present """
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    select_command = """SELECT p.doc_id from corpus_u_of_o_courses.inverted_matrix_terms t, 
+                                            corpus_u_of_o_courses.inverted_matrix_postings p,
+                                            corpus_u_of_o_courses.inverted_matrix_terms_postings tp
+                        WHERE t.term in ("""
+    for term in terms:
+        select_command = select_command + "'{}',".format(term)
+    if select_command[-1] == ',':
+        select_command = select_command[:-1] + ') AND tp.term_id = t.term_id AND p.posting_id = tp.posting_id;'
+    else:
+        select_command = select_command + ') AND tp.term_id = t.term_id AND p.posting_id = tp.posting_id;'
+
+    try:
+        cursor.execute(select_command)
+        doc_ids = cursor.fetchall()
+        cursor.close()
+    except(Exception) as error:
+        doc_ids = None
+        print(error)
+    
+    return [doc_id[0] for doc_id in doc_ids] # doc_ids is list of tuples of 1 int; simplyfy to a list of ints
+
 def retrieve_courses_doc_ids_not_from_term(term):
     """ Returns all doc_ids for docs where term is not present """
     doc_ids = retrieve_courses_doc_ids_from_term(term)
@@ -220,8 +246,24 @@ def retrieve_courses_doc_ids_not_from_set(doc_ids):
         doc_ids = None
         print(error)
     
-    return [doc_id[0] for doc_id in doc_ids] # doc_ids is list of tuples of 1 int; simplyfy to a list of ints
+    return [doc_id[0] for doc_id in doc_ids] # doc_ids is list of tuples of 1 int; simplify to a list of ints
+
+def retrieve_courses_all_terms():
+    """ Retrieves a list of all terms from the inverted matrix index """
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    select_command = 'SELECT term FROM corpus_u_of_o_courses.inverted_matrix_terms'
+
+    try:
+        cursor.execute(select_command)
+        terms = cursor.fetchall()
+    except(Exception) as error:
+        terms = None
+        print(error)
+    
+    return [term[0] for term in terms] # terms is list of tuples of 1 string; simplify to a list of strings
 
 if __name__ == "__main__":
     get_db_version()
-    print(retrieve_courses_doc_ids_not_from_term('&'))
+    print(retrieve_courses_all_terms())

@@ -10,9 +10,9 @@
     {% endwith %}
     <div><a href="/home">Back to search</a></div>
     <br>
-    <div>Results:</div>
+    <div>{{ doc_count }} Results:</div>
     <hr>
-    {% if docs == [] %}
+    {% if doc_count == 0 %}
         <div>**No Results found**</div>
     {% endif %}
     {% for doc in docs %}
