@@ -253,7 +253,7 @@ def retrieve_courses_all_terms():
     connection = get_connection()
     cursor = connection.cursor()
 
-    select_command = 'SELECT term FROM corpus_u_of_o_courses.inverted_matrix_terms'
+    select_command = 'SELECT term FROM corpus_u_of_o_courses.inverted_matrix_terms;'
 
     try:
         cursor.execute(select_command)
@@ -264,6 +264,54 @@ def retrieve_courses_all_terms():
     
     return [term[0] for term in terms] # terms is list of tuples of 1 string; simplify to a list of strings
 
+def retrieve_courses_all_terms_and_doc_freqs():
+    """ Retrieves a list of tuples all terms and their doccument frequencies from the inverted matrix index """
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    select_command = 'SELECT term, doc_freq FROM corpus_u_of_o_courses.inverted_matrix_terms;'
+
+    try:
+        cursor.execute(select_command)
+        pairs = cursor.fetchall()
+    except(Exception) as error:
+        pairs = None
+        print(error)
+    
+    return pairs
+
+def retrieve_courses_all_documents_count():
+    """ Retrieves a count of all documents in the corpus """
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    select_command = 'SELECT COUNT(*) FROM corpus_u_of_o_courses.documents;'
+
+    try:
+        cursor.execute(select_command)
+        count = cursor.fetchone()
+    except(Exception) as error:
+        count = None
+        print(error)
+    
+    return count[0]
+
+def retrieve_courses_all_document_ids():
+    """ Retrieves all document ids in the corpus """
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    select_command = 'SELECT docid FROM corpus_u_of_o_courses.documents;'
+
+    try:
+        cursor.execute(select_command)
+        doc_ids = cursor.fetchall()
+    except(Exception) as error:
+        doc_ids = None
+        print(error)
+    
+    return [doc_id[0] for doc_id in doc_ids]
+
 if __name__ == "__main__":
     get_db_version()
-    print(retrieve_courses_all_terms())
+    print(retrieve_courses_all_document_ids())
