@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>{{ doc[1] }}</h2>
+    <br>
+    <div>{{ doc[2] }}</div>
+    {% if reuters=='True' %}
+        <br>
+        <div>Topic: {{ doc[3] }}</div>
+    {% endif %}
+{% endblock %}

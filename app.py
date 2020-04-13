@@ -5,6 +5,8 @@ import json
 
 # Project imports
 from search_form import SearchForm
+from relevance_form import RelevanceForm, RelevancesForm
+from relevance_feedback_manager import add_doc, remove_doc
 from db_operations import get_db_version, retrieve_courses_documents, retrieve_reuters_documents
 from boolean_retrieval import execute_boolean_query
 from query_processing import process_boolean_query
@@ -58,18 +60,23 @@ def results():
         docs = []
         doc_count = 0
     else:
-        print(doc_ids)
         if query['corpus'] == 'courses':
             docs = retrieve_courses_documents(doc_ids)
         elif query['corpus'] == 'reuters':
             docs = retrieve_reuters_documents(doc_ids)
         doc_count = len(doc_ids)
     if docs == None:
-        docs = []
+        docs = []    
+
     exp_query_input = query_expansion_wordnet(query['query'], query['ir_model'])
     expanded_query = json.dumps({"ir_model": query['ir_model'], "corpus": query['corpus'], "query": exp_query_input})
-    return render_template('results.html', title='Zearjch', docs=docs, doc_count=doc_count, exp_query=expanded_query, exp_query_input=exp_query_input)
+    return render_template('results.html', title='Zearjch', docs=docs, doc_count=doc_count, exp_query=expanded_query, exp_query_input=exp_query_input, reuters=(query['corpus']=='reuters'))
 
+@app.route("/result/<docId>")
+def result(docId):
+    reuters = request.args['reuters']
+    doc = retrieve_reuters_documents([docId])[0] if reuters=='True' else retrieve_courses_documents([docId])[0]
+    return render_template('full_doc.html', doc=doc, reuters=reuters)
 
 @app.route('/autocomplete', methods=['GET'])
 def autocomplete():

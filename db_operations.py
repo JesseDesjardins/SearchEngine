@@ -341,15 +341,12 @@ def insert_reuters_corpus_into_db(json_file):
     insert_command = 'INSERT INTO corpus_reuters.documents(docid, title, body, topics) values '
     with open(json_file) as file:
         data = json.load(file)
-        last = 0
         for doc in data['documents']:
             doc_id = doc['docId']
             title = doc['title'].replace("'", "''") if doc['title'] != "" else None
             body = doc['body'].replace("'", "''") if doc['body'] != "" else None
             topics = doc['topics'].replace("'", "''") if doc['topics'] != "" else None
             insert_command = insert_command + """({0}, '{1}', '{2}', '{3}'),""".format(doc_id, title, body, topics)
-            if doc_id == last : print(doc_id, title)
-            last = doc_id
         insert_command = insert_command[:-1] + ';' # Removes trailing comma
     
     try:
@@ -431,8 +428,6 @@ def retrieve_reuters_documents(doc_ids):
         select_command = select_command[:-1] + ');'
     else:
         select_command = select_command + ');'
-
-    print(select_command)
     try:
         cursor.execute(select_command)
         docs = cursor.fetchall()
@@ -470,7 +465,6 @@ def retrieve_reuters_doc_ids_from_terms(terms):
         select_command = select_command[:-1] + ');'
     else:
         select_command = select_command + ');'
-    print(select_command)
     try:
         cursor.execute(select_command)
         doc_id_term_freq_tuples = cursor.fetchall()

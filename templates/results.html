@@ -20,10 +20,11 @@
     {% if doc_count == 0 %}
         <div>**No Results found**</div>
     {% endif %}
-    {% for doc in docs %}
-        <div>{{ doc[1] }}</div>
+    {% for i in range(doc_count) %}
+        <div><a href="{{ url_for('result', docId=docs[i][0], reuters=reuters) }}">{{ docs[i][1] }}</a></div>
         <br>
-        <div>{{ doc[2] }}</div>
+        <div>{{ docs[i][2][:150]+"..." }}</div>
+        <button>Mark as relevant</button>
         <hr>
     {% endfor %}
 {% endblock %}
