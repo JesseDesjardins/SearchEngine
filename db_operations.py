@@ -464,14 +464,13 @@ def retrieve_reuters_doc_ids_from_terms(terms):
     cursor = connection.cursor()
 
     select_command = "SELECT doc_id_term_freq_tuple from corpus_reuters.inverted_matrix_terms_postings WHERE term in ("
-
     for term in terms:
         select_command = select_command + "'{}',".format(term)
     if select_command[-1] == ',':
         select_command = select_command[:-1] + ');'
     else:
         select_command = select_command + ');'
-
+    print(select_command)
     try:
         cursor.execute(select_command)
         doc_id_term_freq_tuples = cursor.fetchall()
@@ -482,7 +481,8 @@ def retrieve_reuters_doc_ids_from_terms(terms):
     doc_ids = []
     for tpl in doc_id_term_freq_tuples:
         for inner_tpl in tpl:
-            doc_ids.append(inner_tpl[0])
+            for more_inner_tpl in inner_tpl:
+                doc_ids.append(more_inner_tpl[0])
     return doc_ids
 
 def retrieve_reuters_doc_ids_not_from_set(doc_ids):

@@ -72,10 +72,10 @@ def execute_boolean_query(postfix_query_tokens, collection):
                     operand_sets.append(union(operand_set_1, retrieve_reuters_doc_ids_not_from_set(operand_set_2)))
                 else: # unrechable case
                     None
-        return operand_sets.pop()[0] # not sure what causes it, but the result is a list in a list
+        return operand_sets.pop() # if isinstance(final, list) else  # not sure what causes it, but the result is a list in a list
 
 def union(lst1, lst2):
-    return list(set(lst1) | set(lst2))
+    return [item for item in lst1] + [item for item in lst2]
 
 def difference(lst1, lst2):
     return [item for item in lst1 if item not in set(lst2)]

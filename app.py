@@ -9,6 +9,7 @@ from db_operations import get_db_version, retrieve_courses_documents, retrieve_r
 from boolean_retrieval import execute_boolean_query
 from query_processing import process_boolean_query
 from process_and_load import process_and_load_courses
+from global_query_expansion import query_expansion_wordnet
 
 # Flask config info
 app = Flask(__name__)
@@ -65,7 +66,9 @@ def results():
         doc_count = len(doc_ids)
     if docs == None:
         docs = []
-    return render_template('results.html', title='Zearjch', docs=docs, doc_count=doc_count)
+    exp_query_input = query_expansion_wordnet(query['query'], query['ir_model'])
+    expanded_query = json.dumps({"ir_model": query['ir_model'], "corpus": query['corpus'], "query": exp_query_input})
+    return render_template('results.html', title='Zearjch', docs=docs, doc_count=doc_count, exp_query=expanded_query, exp_query_input=exp_query_input)
 
 
 @app.route('/autocomplete', methods=['GET'])

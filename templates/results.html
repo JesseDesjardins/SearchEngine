@@ -11,6 +11,11 @@
     <div><a href="/home">Back to search</a></div>
     <br>
     <div>{{ doc_count }} Results:</div>
+    {% if exp_query != '' %}
+        <p>Possible expanded query: <a href="{{ url_for('results', query=exp_query) }}">{{ exp_query_input }}</a></p>
+    {% else %}
+        <p>No usefull expanded query</p>
+    {% endif %}
     <hr>
     {% if doc_count == 0 %}
         <div>**No Results found**</div>
