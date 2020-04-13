@@ -1,14 +1,38 @@
 <html>
     <head>
       {% if title %}
-      <title>{{ title }} - Microblog</title>
+      <title>{{ title }}</title>
       {% else %}
-      <title>Welcome to Microblog</title>
+      <title>Search Away!</title>
       {% endif %}
     </head>
     <body>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+        <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.js"></script>
         <div><a href="/home">Home</a></div>
-        <hr><hr>
+        <hr>
+        <hr>
         {% block content %}{% endblock %}
     </body>
+
+    <!-- AJAX autocomplete code based off of: https://stackoverflow.com/questions/34704997/jquery-autocomplete-in-flask -->
+    <script>
+      $(function() {
+          $("#search_autocomplete").autocomplete({
+              source:function(request, response) {
+                  $.getJSON("{{url_for('autocomplete')}}",{
+                      q: request.term, // in flask, "q" will be the argument to look for using request.args
+                  }, function(data) {
+                      response(data.matching_results); // matching_results from jsonify
+                  });
+              },
+              minLength: 2,
+              select: function(event, ui) {
+                  console.log(ui.item.value); // not in your question, but might help later
+              }
+          });
+      })
+    </script>
 </html>

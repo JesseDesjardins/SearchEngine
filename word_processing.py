@@ -5,7 +5,7 @@ from nltk.stem import PorterStemmer, WordNetLemmatizer
 from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.tag import pos_tag
 
-symbols = [':', ';', '(', ')', '!', '?', '...', ',', '.', '-', '\'', '\"', '\\', '/']
+symbols = [':', ';', '(', ')', '!', '?', '...', ',', '.', '-', '\'', '\"', '\\', '/', '$']
 """ List of symbols """             
 
 def tokenize(text):
@@ -18,7 +18,10 @@ def case_fold(tokens):
     return [token.lower() for token in tokens]
 
 def remove_stopwords(tokens):
-   return [token for token in tokens if token not in set(stopwords.words('english'))]
+   return [token 
+   for token in tokens 
+   if token not in 
+   set(stopwords.words('english'))]
 
 def normalize(tokens):
     for symbol in symbols:

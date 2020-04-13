@@ -1,0 +1,15 @@
+create role zearjch_admin with superuser login password 'shhhItsASecret';
+create database zearjch;
+\connect zearjch zearjch_admin;
+create schema corpus_u_of_o_courses authorization zearjch_admin;
+grant all privileges on all tables in schema corpus_u_of_o_courses to zearjch_admin;
+create table corpus_u_of_o_courses.documents (docid serial primary key, title text, description text);
+create table corpus_u_of_o_courses.dictionary (word text, docid int);
+create table corpus_u_of_o_courses.inverted_matrix_terms (term_id serial primary key, term text, doc_freq int);
+create table corpus_u_of_o_courses.inverted_matrix_postings (posting_id serial primary key, doc_id int, term_freq int);
+create table corpus_u_of_o_courses.inverted_matrix_terms_postings (term_id int references corpus_u_of_o_courses.inverted_matrix_terms(term_id), posting_id int references corpus_u_of_o_courses.inverted_matrix_postings (posting_id));
+create schema corpus_reuters authorization zearjch_admin;
+grant all privileges on all tables in schema corpus_reuters to zearjch_admin;
+create table corpus_reuters.documents (docid serial primary key, title text, body text, topics text);
+create table corpus_reuters.dictionary (word text, docid int);
+create table corpus_reuters.inverted_matrix_terms_postings (term_id serial primary key, term text, doc_freq int, doc_id_term_freq_tuple text[][]);

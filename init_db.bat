@@ -1,0 +1,1 @@
+psql -f init_db.sql

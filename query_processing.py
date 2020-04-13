@@ -1,7 +1,7 @@
 from collections import deque
 
 # Inspired by https://runestone.academy/runestone/books/published/pythonds/BasicDS/InfixPrefixandPostfixExpressions.html
-def process_query(query_string):
+def process_boolean_query(query_string):
     """ processes a boolean query from infix to postfix format for easier querying 
     
     The stack is implemented with a deque (more time efficient than a list).
@@ -63,5 +63,5 @@ def process_query(query_string):
         
 
 if __name__ == "__main__":
-    print(process_query("(operating AND (system OR platform))"))
-    print(process_query("(NOT test)"))
+    print(process_boolean_query("(operating AND (system OR platform))"))
+    print(process_boolean_query("(NOT test)"))
