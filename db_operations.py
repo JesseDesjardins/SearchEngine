@@ -500,6 +500,54 @@ def retrieve_reuters_doc_ids_not_from_set(doc_ids):
     
     return [doc_id[0] for doc_id in doc_ids] # doc_ids is list of tuples of 1 int; simplify to a list of ints
 
+def retrieve_reuters_all_documents_count():
+    """ Retrieves a count of all documents in the corpus """
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    select_command = 'SELECT COUNT(*) FROM corpus_reuters.documents;'
+
+    try:
+        cursor.execute(select_command)
+        count = cursor.fetchone()
+    except(Exception) as error:
+        count = None
+        print(error)
+    
+    return count[0]
+
+def retrieve_reuters_all_terms_count():
+    """ Retrieves a count of all unique terms in the corpus """
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    select_command = 'SELECT COUNT(*) FROM corpus_reuters.inverted_matrix_terms_postings;'
+
+    try:
+        cursor.execute(select_command)
+        count = cursor.fetchone()
+    except(Exception) as error:
+        count = None
+        print(error)
+    
+    return count[0]
+
+def retrieve_reuters_all_terms_and_doc_freqs():
+    """ Retrieves a list of tuples all terms and their doccument frequencies from the inverted matrix index """
+    connection = get_connection()
+    cursor = connection.cursor()
+
+    select_command = 'SELECT term, doc_freq FROM corpus_reuters.inverted_matrix_terms_postings;'
+
+    try:
+        cursor.execute(select_command)
+        pairs = cursor.fetchall()
+    except(Exception) as error:
+        pairs = None
+        print(error)
+    
+    return pairs
+
 if __name__ == "__main__":
     get_db_version()
     # insert_reuters_dictionary_into_db("reuters_dictionary.json")

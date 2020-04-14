@@ -1,69 +1,81 @@
 import math
 import json
+from collections import defaultdict
 
-from db_operations import retrieve_courses_all_terms_and_doc_freqs, retrieve_courses_all_document_ids, retrieve_courses_all_documents_count, retrieve_courses_all_terms_count
+from db_operations import retrieve_courses_all_terms_and_doc_freqs, retrieve_courses_all_document_ids, retrieve_courses_all_documents_count, retrieve_courses_all_terms_count, retrieve_reuters_all_documents_count, retrieve_reuters_all_terms_count, retrieve_reuters_all_terms_and_doc_freqs
 
 def build_weighted_index():
     """ Builds a weighted index matrix using terms (sorted alphabetically) as columns and documents
     (sorted in increasing order) as rows """
-    # use inverted matrix --> index of all term/document weights
-    # total number of docs = N
-    # idf = N/doc_freq
-    # tf = tf from postings table or 0
 
     total_document_count = retrieve_courses_all_documents_count()
     total_term_count = retrieve_courses_all_terms_count()
     terms_and_freqs = retrieve_courses_all_terms_and_doc_freqs()
-    # Create idf scores list
-    idf = build_idf_values(total_term_count, terms_and_freqs, total_document_count)
-    # Create tf-idf matrix
-    tf = build_tf_idf_matrix(total_term_count, total_document_count, idf)
-    # Multiply tf scores by idf values
-    for doc in range(len(tf)):
-        for term in range(len(tf[doc])):
-            tf[doc][term] *= idf[term]
-    return tf
+
+    total_document_count_reuters = retrieve_reuters_all_documents_count()
+    total_term_count_reuters = retrieve_reuters_all_terms_count()
+    terms_and_freqs_reuters = retrieve_reuters_all_terms_and_doc_freqs()
+
+    idf_values = {}
+    idf_values["values"] = build_idf_values(total_term_count, terms_and_freqs, total_document_count)
+    weighted_index = {}
+    weighted_index["index"] = build_tf_idf_matrix(idf_values["values"], "courses")
+
+    with open("courses_idf_values.json", 'w') as outfile:
+        json.dump(idf_values, outfile)
+
+    with open("courses_weighted_index.json", 'w') as outfile:
+        json.dump(weighted_index, outfile)
+
+    idf_values = {}
+    idf_values["values"] = build_idf_values(total_term_count_reuters, terms_and_freqs_reuters, total_document_count_reuters)
+    weighted_index = {}
+    weighted_index["index"] = build_tf_idf_matrix(idf_values["values"], "reuters")
+
+    with open("reuters_idf_values.json", 'w') as outfile:
+        json.dump(idf_values, outfile)
+
+    with open("reuters_weighted_index.json", 'w') as outfile:
+        json.dump(weighted_index, outfile)
+    return weighted_index
 
 def build_idf_values(total_term_count, term_and_freqs, total_document_count):
-    """ returns a list of terms and their respective idf values """
+    """ returns a dict of terms and their respective idf values """
     return {term: math.log10(total_document_count / freq) for term, freq in term_and_freqs}
 
-def build_tf_idf_matrix(num_of_terms, num_of_docs, idf):
+def build_tf_idf_matrix(idf, collection):
     """ returns tf-idf matrix represented as a dictionary of dictionaries. 
-    The outer dictionary will be indexed on the documents and the inner 
-    dictionary will be indexed on the terms. 
+    The outer dictionary will be indexed on the terms and the inner 
+    dictionary will be indexed on the documents. 
     
     Uses the raw term frequency. """
-    with open("courses_inverted_index.json") as infile:
-        inverted_index = json.load(infile)
-    
-    # return {doc + 1: {term["term"]: freq * idf[term["term"]] if doc + 1 == docId else 0 
-    # for term in inverted_index["index"] 
-    # for docId, freq in term["postings_list"]} 
-    # for doc in range(num_of_docs)}
 
-    # TODO: Incomplete
-    tf_idf = {}
-    for doc in range(num_of_docs):
-        tf_idf[doc + 1] = {}
-        for term in inverted_index["index"]:
-            for docId, freq in term["postings_list"]:
-                if doc + 1 == docId:
-                    new_freq = freq
-                else:
-                    new_freq = 0
-                tf_idf[doc + 1][term["term"]] = new_freq * idf[term["term"]]
+    inverted_index = {}
+    if collection == "courses":
+        with open("courses_inverted_index.json") as infile:
+            inverted_index = json.load(infile)
+    elif collection == "reuters":
+        with open("reuters_inverted_index.json") as infile:
+            inverted_index = json.load(infile)
+
+    tf_idf = defaultdict(lambda: defaultdict(int)) # essentailly 2D dictionarry with a default value of 0 for any missing keys
+    for term in inverted_index["index"]:
+        term_row = defaultdict(int) # Will hold all docs and values, in reference to one term
+        for doc in term["postings_list"]:
+            term_row[doc[0]] = doc[1] * idf[term["term"]] # doc[0] is docId, doc[1] is raw term frequency
+        tf_idf[term["term"]] = term_row
+
     return tf_idf
+
+def get_doc_term_scores(tf_idf, docId):
+    """ Returns a dict of all terms present in a given doc and their respective tf-idf scores """
+    doc_scores = defaultdict(int)
+    for term in tf_idf.keys():
+        for doc_id in tf_idf[term]:
+            if doc_id == docId : doc_scores[term] = tf_idf[term][doc_id]
+    return doc_scores
 
     
 if __name__ == "__main__":
-    # print(build_idf_values(retrieve_courses_all_terms_count(), retrieve_courses_all_terms_and_doc_freqs(), retrieve_courses_all_documents_count()))
-    # print(build_weighted_index())
-    idf = build_idf_values(retrieve_courses_all_terms_count(), retrieve_courses_all_terms_and_doc_freqs(), retrieve_courses_all_documents_count())
-    print(idf["knowledge"])
-    tf_idf_mat = build_tf_idf_matrix(retrieve_courses_all_terms_count(), retrieve_courses_all_documents_count(), idf)
-    # x = [term + ' ,' + value for term, value in tf_idf_mat[3] if value !=0]
-    for key, value in tf_idf_mat[1].items():
-        # print(key, value) if key == "knowledge" else None
-        print(key, value) if value != 0 else None
-    print(tf_idf_mat[1])
+    build_weighted_index()
+    

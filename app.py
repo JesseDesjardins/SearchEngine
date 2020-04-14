@@ -12,6 +12,7 @@ from boolean_retrieval import execute_boolean_query
 from query_processing import process_boolean_query
 from process_and_load import process_and_load_courses
 from global_query_expansion import query_expansion_wordnet
+from vsm_retrieval import execute_vsm_query
 
 # Flask config info
 app = Flask(__name__)
@@ -47,15 +48,17 @@ def results():
     docs = []
     query_json = request.args['query']
     query = json.loads(query_json)
-    if query['ir_model'] == 'bool':
-        collection = None
-        if query['corpus'] == 'courses':
+
+    collection = None
+    if query['corpus'] == 'courses':
             collection = "courses"
-        elif query['corpus'] == 'reuters':
+    elif query['corpus'] == 'reuters':
             collection = "reuters"
+
+    if query['ir_model'] == 'bool':
         doc_ids = execute_boolean_query(process_boolean_query(query['query']), collection)
     elif query['ir_model'] == 'vsm':
-        doc_ids = [] # TODO implement VSM
+        doc_ids = execute_vsm_query(query['query'], collection)
     if doc_ids == []:
         docs = []
         doc_count = 0
